@@ -52,6 +52,10 @@ The application follows the natural workflow of a patient visiting the clinic:
    - **Today’s Payments**
    - **Final Reports**
 
+### UI DEMO 
+(https://kramprakash2005.github.io/clinic.github.io/login.html)[click here]
+Sample UserName: admin
+Sample Password: password
 ---
 
 ## 3. Features
