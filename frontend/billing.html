@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing - Sri Ram Physico Clinic</title>
+    <!-- CSS Links -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Open+Sans:wght@400;700&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Side Navigation Bar -->
+        <nav class="sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house-door-fill"></i> Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="patients.html"><i class="bi bi-people-fill"></i> Patients</a></li>
+                <li class="nav-item"><a class="nav-link" href="visits.html"><i class="bi bi-person-walking"></i> Visits</a></li>
+                <li class="nav-item"><a class="nav-link active" href="billing.html"><i class="bi bi-receipt"></i> Billing</a></li>
+                <li class="nav-item"><a class="nav-link" href="services.html"><i class="bi bi-gear-fill"></i> Services</a></li>
+                <li class="nav-item"><a class="nav-link" href="reports.html"><i class="bi bi-bar-chart-line-fill"></i> Reports</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Wrapper -->
+        <div class="main-content-wrapper">
+            <!-- Top Bar -->
+            <header class="top-bar d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-heart-pulse-fill logo-icon me-2"></i>
+                    <h5 class="clinic-logo-text mb-0">Sri Ram Physico Clinic</h5>
+                </div>
+                <button class="btn btn-outline-secondary"><i class="bi bi-box-arrow-right"></i> Logout</button>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="content-area p-4">
+                <div class="dashboard-card p-4">
+                    <!-- Tab-like buttons -->
+                    <ul class="nav nav-pills mb-4">
+                        <li class="nav-item"><a class="nav-link active" href="#" id="pending-tab">Pending Bills</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" id="paid-tab">Today's Payments</a></li>
+                    </ul>
+
+                    <!-- Pending Bills Table -->
+                    <div id="pending-bills-table">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light"><tr><th>Bill ID</th><th>Patient Name</th><th>Visit Date</th><th>Action</th></tr></thead>
+                                <tbody id="pending-bills-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Today's Payments Table -->
+                    <div id="paid-bills-table" style="display: none;">
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead class="table-light"><tr><th style="width: 5%;"></th><th>Bill ID</th><th>Patient Name</th><th>Visit Date</th><th>Amount</th></tr></thead>
+                                <tbody id="paid-bills-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Element References
+            const pendingTab = document.getElementById('pending-tab');
+            const paidTab = document.getElementById('paid-tab');
+            const pendingTableDiv = document.getElementById('pending-bills-table');
+            const paidTableDiv = document.getElementById('paid-bills-table');
+            const pendingTbody = document.getElementById('pending-bills-tbody');
+            const paidTbody = document.getElementById('paid-bills-tbody');
+            
+            const apiUrl = 'http://127.0.0.1:8000/billing';
+
+            function formatDate(isoString) { return new Date(isoString).toLocaleDateString('en-CA'); }
+
+            // --- Fetch and render PENDING bills ---
+            async function fetchAndRenderPendingBills() {
+                try {
+                    const response = await fetch(`${apiUrl}/pending`);
+                    if (!response.ok) throw new Error('Failed to fetch pending bills.');
+                    const bills = await response.json();
+                    pendingTbody.innerHTML = '';
+                    if (bills.length === 0) {
+                        pendingTbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No pending bills found.</td></tr>';
+                        return;
+                    }
+                    bills.forEach(bill => {
+                        const row = `<tr>
+                                <td>${bill.bill_id}</td>
+                                <td>${bill.patient.fullName}</td>
+                                <td>${formatDate(bill.visit.entryDate)}</td>
+                                <td><a href="manage-bill.html?id=${bill._id}" class="btn btn-sm btn-primary">Open Bill</a></td>
+                            </tr>`;
+                        pendingTbody.insertAdjacentHTML('beforeend', row);
+                    });
+                } catch (error) {
+                    console.error('Error fetching pending bills:', error);
+                    pendingTbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Failed to load data.</td></tr>';
+                }
+            }
+            
+            // --- Fetch and render PAID bills ---
+            async function fetchAndRenderPaidBills() {
+                try {
+                    const response = await fetch(`${apiUrl}/paid-today`);
+                    if (!response.ok) throw new Error('Failed to fetch paid bills.');
+                    const bills = await response.json();
+                    paidTbody.innerHTML = '';
+                    if (bills.length === 0) {
+                        paidTbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No payments recorded today.</td></tr>';
+                        return;
+                    }
+                    bills.forEach(bill => {
+                        const treatmentsHtml = bill.treatments.map(t => `<li>${t.name} (₹ ${t.cost})</li>`).join('') || '<li>No treatments recorded.</li>';
+                        const row = `
+                            <tr class="bill-toggler" data-target-id="bill-details-${bill._id}">
+                                <td><i class="bi bi-caret-right-fill expand-icon"></i></td>
+                                <td>${bill.bill_id}</td>
+                                <td>${bill.patient.fullName}</td>
+                                <td>${formatDate(bill.visit.entryDate)}</td>
+                                <td>₹ ${bill.totalAmount.toFixed(2)}</td>
+                            </tr>
+                            <tr id="bill-details-${bill._id}" class="bill-details-row">
+                                <td colspan="5" class="p-3">
+                                    <strong>Treatments:</strong><ul>${treatmentsHtml}</ul>
+                                    <strong>Payment Method:</strong> ${bill.paymentMethod || 'N/A'}
+                                </td>
+                            </tr>`;
+                        paidTbody.insertAdjacentHTML('beforeend', row);
+                    });
+                } catch (error) {
+                    console.error('Error fetching paid bills:', error);
+                    paidTbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Failed to load data.</td></tr>';
+                }
+            }
+
+            // --- Logic for Tab Switching ---
+            pendingTab.addEventListener('click', function(e) { 
+                e.preventDefault(); 
+                pendingTab.classList.add('active');
+                paidTab.classList.remove('active');
+                pendingTableDiv.style.display = 'block';
+                paidTableDiv.style.display = 'none';
+                fetchAndRenderPendingBills();
+            });
+
+            paidTab.addEventListener('click', function(e) { 
+                e.preventDefault(); 
+                paidTab.classList.add('active');
+                pendingTab.classList.remove('active');
+                paidTableDiv.style.display = 'block';
+                pendingTableDiv.style.display = 'none';
+                fetchAndRenderPaidBills();
+            });
+            
+            // --- Logic for Expandable Rows ---
+            paidTbody.addEventListener('click', function(event){
+                const togglerRow = event.target.closest('.bill-toggler');
+                if (!togglerRow) return;
+                
+                const targetId = togglerRow.dataset.targetId;
+                const detailsRow = document.getElementById(targetId);
+                const icon = togglerRow.querySelector('.expand-icon');
+                
+                detailsRow.classList.toggle('show');
+                icon.classList.toggle('bi-caret-right-fill');
+                icon.classList.toggle('bi-caret-down-fill');
+            });
+            
+            // Initial Load
+            fetchAndRenderPendingBills();
+        });
+    </script>
+</body>
+</html>
+

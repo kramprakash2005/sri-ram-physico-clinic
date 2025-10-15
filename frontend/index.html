@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sri Ram Physico Clinic</title>
+    <!-- CSS Links -->
+     <script src="auth-guard.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Open+Sans:wght@400;700&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Side Navigation Bar (CORRECTED) -->
+        <nav class="sidebar flex-shrink-0">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link active" href="index.html"><i class="bi bi-house-door-fill"></i> Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="patients.html"><i class="bi bi-people-fill"></i> Patients</a></li>
+                <li class="nav-item"><a class="nav-link" href="visits.html"><i class="bi bi-person-walking"></i> Visits</a></li>
+                <li class="nav-item"><a class="nav-link" href="billing.html"><i class="bi bi-receipt"></i> Billing</a></li>
+                <li class="nav-item"><a class="nav-link" href="services.html"><i class="bi bi-gear-fill"></i> Services</a></li>
+                <li class="nav-item"><a class="nav-link" href="reports.html"><i class="bi bi-bar-chart-line-fill"></i> Reports</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Wrapper -->
+        <div class="main-content-wrapper">
+            <!-- Top Bar -->
+            <header class="top-bar d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-heart-pulse-fill logo-icon me-2"></i>
+                    <h5 class="clinic-logo-text mb-0">Sri Ram Physico Clinic</h5>
+                </div>
+                <button class="btn btn-outline-secondary"><i class="bi bi-box-arrow-right"></i> Logout</button>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="content-area p-4">
+                <!-- <div class="text-center mb-5">
+                    <h2 class="display-6">Welcome Back!</h2>
+                    <p class="lead text-muted">What would you like to do today?</p>
+                </div> -->
+
+                <!-- Expanded Action Cards Layout -->
+                <div class="row g-4 justify-content-center">
+                    <!-- Create New Visit Card -->
+                    <div class="col-lg-4 col-md-6">
+                        <a href="add-visit-search.html" class="action-card text-decoration-none">
+                            <div class="action-card-icon text-primary"><i class="bi bi-person-plus-fill"></i></div>
+                            <h4 class="action-card-title">Create New Visit</h4>
+                            <p class="text-muted">Start by finding a patient and creating a new visit for today.</p>
+                        </a>
+                    </div>
+
+                    <!-- View Pending Bills Card -->
+                    <div class="col-lg-4 col-md-6">
+                        <a href="billing.html" class="action-card text-decoration-none">
+                            <div class="action-card-icon text-danger"><i class="bi bi-receipt-cutoff"></i></div>
+                            <h4 class="action-card-title d-flex justify-content-center align-items-center">
+                                Pending Bills <span class="badge bg-danger ms-2" id="pending-bills-count">0</span>
+                            </h4>
+                            <p class="text-muted">View all open bills that need to be finalized and paid.</p>
+                        </a>
+                    </div>
+                    
+                    <!-- Manage Patients Card -->
+                    <div class="col-lg-4 col-md-6">
+                        <a href="patients.html" class="action-card text-decoration-none">
+                            <div class="action-card-icon text-success"><i class="bi bi-people-fill"></i></div>
+                            <h4 class="action-card-title">Manage Patients</h4>
+                            <p class="text-muted">Add new or search for existing patient records. Total: <strong id="total-patients-count">0</strong></p>
+                        </a>
+                    </div>
+
+                    <!-- Manage Services Card -->
+                    <div class="col-lg-4 col-md-6">
+                        <a href="services.html" class="action-card text-decoration-none">
+                            <div class="action-card-icon text-info"><i class="bi bi-gear-fill"></i></div>
+                            <h4 class="action-card-title">Manage Services</h4>
+                            <p class="text-muted">Add, edit, or remove the treatments and services your clinic offers.</p>
+                        </a>
+                    </div>
+
+                    <!-- View Reports Card -->
+                    <div class="col-lg-4 col-md-6">
+                        <a href="reports.html" class="action-card text-decoration-none">
+                            <div class="action-card-icon text-secondary"><i class="bi bi-bar-chart-line-fill"></i></div>
+                            <h4 class="action-card-title">View Reports</h4>
+                            <p class="text-muted">Generate and view detailed reports on revenue, patients, and services.</p>
+                        </a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Internal JavaScript for Dashboard -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const statsApiUrl = 'http://127.0.0.1:8000/dashboard/stats';
+            const patientsApiUrl = 'http://127.0.0.1:8000/patients';
+
+            // Element references
+            const pendingBillsCountEl = document.getElementById('pending-bills-count');
+            const totalPatientsCountEl = document.getElementById('total-patients-count');
+            
+            async function fetchDashboardData() {
+                try {
+                    // Fetch stats and patients in parallel
+                    const [statsResponse, patientsResponse] = await Promise.all([
+                        fetch(statsApiUrl),
+                        fetch(patientsApiUrl)
+                    ]);
+
+                    if (!statsResponse.ok || !patientsResponse.ok) {
+                        throw new Error('Failed to fetch dashboard data.');
+                    }
+
+                    const stats = await statsResponse.json();
+                    const patients = await patientsResponse.json();
+
+                    // Populate the counters
+                    pendingBillsCountEl.textContent = stats.pendingBills;
+                    totalPatientsCountEl.textContent = patients.length;
+
+                } catch (error) {
+                    console.error('Dashboard Error:', error);
+                    // Keep default '0' values on error
+                }
+            }
+            
+            // Initial Load
+            fetchDashboardData();
+        });
+    </script>
+</body>
+</html>
+

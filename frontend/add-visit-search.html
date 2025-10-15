@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Visit: Select Patient - Sri Ram Physico Clinic</title>
+    <!-- CSS Links -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Open+Sans:wght@400;700&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Side Navigation Bar -->
+        <nav class="sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house-door-fill"></i> Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="patients.html"><i class="bi bi-people-fill"></i> Patients</a></li>
+                <li class="nav-item"><a class="nav-link active" href="visits.html"><i class="bi bi-person-walking"></i> Visits</a></li>
+                <li class="nav-item"><a class="nav-link" href="billing.html"><i class="bi bi-receipt"></i> Billing</a></li>
+                <li class="nav-item"><a class="nav-link" href="services.html"><i class="bi bi-gear-fill"></i> Services</a></li>
+                <li class="nav-item"><a class="nav-link" href="reports.html"><i class="bi bi-bar-chart-line-fill"></i> Reports</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Wrapper -->
+        <div class="main-content-wrapper">
+            <!-- Top Bar -->
+            <header class="top-bar d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-heart-pulse-fill logo-icon me-2"></i>
+                    <h5 class="clinic-logo-text mb-0">Sri Ram Physico Clinic</h5>
+                </div>
+                <button class="btn btn-outline-secondary"><i class="bi bi-box-arrow-right"></i> Logout</button>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="content-area p-4">
+                <div class="dashboard-card p-4">
+                    <!-- UPDATED: Header with Back button -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h4 class="mb-1">Create New Visit: Select Patient</h4>
+                            <p class="text-muted mb-0">Search for a patient to create a new visit.</p>
+                        </div>
+                        <a href="visits.html" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Visits
+                        </a>
+                    </div>
+                    
+                    <!-- Search Bar -->
+                    <div class="input-group input-group-lg mb-4">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" id="patient-search-input" class="form-control" placeholder="Search by name or contact number...">
+                    </div>
+
+                    <!-- Patient Search Results Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr><th>Patient Name</th><th>Contact</th><th>Date of Birth</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="patient-search-results"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- MODAL for Step 2: Entering Visit Details -->
+    <div class="modal fade" id="visitDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Visit for: <span id="modal-patient-name" class="text-primary"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="visit-form">
+                        <div class="mb-3">
+                            <label class="form-label">Visit Date</label>
+                            <input type="text" class="form-control" id="visit-date" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="visitProblem" class="form-label">Problem / Reason for Visit</label>
+                            <textarea class="form-control" id="visitProblem" rows="4" placeholder="Enter patient's issue..." required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="create-visit-button" class="btn btn-primary">Create Visit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Internal JavaScript for Visit Creation Workflow -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('patient-search-input');
+            const searchResultsBody = document.getElementById('patient-search-results');
+            const visitDetailsModal = new bootstrap.Modal(document.getElementById('visitDetailsModal'));
+            const createVisitButton = document.getElementById('create-visit-button');
+            const modalPatientName = document.getElementById('modal-patient-name');
+            const visitProblemInput = document.getElementById('visitProblem');
+            
+            const patientsApiUrl = 'http://127.0.0.1:8000/patients';
+            const visitsApiUrl = 'http://127.0.0.1:8000/visits';
+            
+            let allPatients = [];
+            let selectedPatientId = null;
+
+            // --- Step 1: Fetch all patients and set up search ---
+
+            function renderPatientTable(patients) {
+                searchResultsBody.innerHTML = '';
+                if (patients.length === 0) {
+                    searchResultsBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No patients found.</td></tr>';
+                    return;
+                }
+                patients.forEach(patient => {
+                    const dob = patient.dob ? new Date(patient.dob).toLocaleDateString('en-CA') : 'N/A';
+                    const row = `
+                        <tr data-patient-id="${patient._id}" data-patient-name="${patient.fullName}">
+                            <td>${patient.fullName}</td>
+                            <td>${patient.contactNumber}</td>
+                            <td>${dob}</td>
+                            <td>
+                                <button class="btn btn-primary add-visit-btn">
+                                    <i class="bi bi-plus-lg"></i> Add Visit
+                                </button>
+                            </td>
+                        </tr>`;
+                    searchResultsBody.insertAdjacentHTML('beforeend', row);
+                });
+            }
+
+            async function initializeSearch() {
+                try {
+                    const response = await fetch(patientsApiUrl);
+                    if (!response.ok) throw new Error('Failed to fetch patients.');
+                    allPatients = await response.json();
+                    renderPatientTable(allPatients);
+                } catch (error) {
+                    console.error(error);
+                    searchResultsBody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Could not load patient data.</td></tr>';
+                }
+            }
+
+            searchInput.addEventListener('input', () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                const filtered = allPatients.filter(p => 
+                    p.fullName.toLowerCase().includes(searchTerm) || 
+                    p.contactNumber.includes(searchTerm)
+                );
+                renderPatientTable(filtered);
+            });
+
+            // --- Step 2: Handle "Add Visit" button click to open modal ---
+            
+            searchResultsBody.addEventListener('click', (event) => {
+                const addButton = event.target.closest('.add-visit-btn');
+                if (addButton) {
+                    const row = addButton.closest('tr');
+                    selectedPatientId = row.dataset.patientId;
+                    modalPatientName.textContent = row.dataset.patientName;
+                    document.getElementById('visit-date').value = new Date().toLocaleDateString('en-GB');
+                    visitDetailsModal.show();
+                }
+            });
+
+            // --- Step 3: Handle final "Create Visit" in modal ---
+
+            createVisitButton.addEventListener('click', async () => {
+                const problem = visitProblemInput.value;
+                if (!problem || !selectedPatientId) {
+                    alert('Please enter a problem for the visit.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(visitsApiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            patient_id: selectedPatientId,
+                            problem: problem
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || 'Failed to create visit.');
+                    }
+
+                    // On success, redirect to the main visits page
+                    window.location.href = './visits.html';
+
+                } catch (error) {
+                    console.error(error);
+                    alert('Could not create the visit. Please try again.');
+                }
+            });
+
+            // Initial load
+            initializeSearch();
+        });
+    </script>
+</body>
+</html>
+

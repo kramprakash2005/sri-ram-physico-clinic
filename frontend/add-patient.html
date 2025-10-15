@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Patient - Sri Ram Physico Clinic</title>
+    <!-- CSS Links -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Open+Sans:wght@400;700&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Side Navigation Bar -->
+        <nav class="sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house-door-fill"></i> Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link active" href="patients.html"><i class="bi bi-people-fill"></i> Patients</a></li>
+                <li class="nav-item"><a class="nav-link" href="visits.html"><i class="bi bi-person-walking"></i> Visits</a></li>
+                <li class="nav-item"><a class="nav-link" href="billing.html"><i class="bi bi-receipt"></i> Billing</a></li>
+                <li class="nav-item"><a class="nav-link" href="services.html"><i class="bi bi-gear-fill"></i> Services</a></li>
+                <li class="nav-item"><a class="nav-link" href="reports.html"><i class="bi bi-bar-chart-line-fill"></i> Reports</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Wrapper -->
+        <div class="main-content-wrapper">
+            <!-- Top Bar -->
+            <header class="top-bar d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-heart-pulse-fill logo-icon me-2"></i>
+                    <h5 class="clinic-logo-text mb-0">Sri Ram Physico Clinic</h5>
+                </div>
+                <button class="btn btn-outline-secondary">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </button>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="content-area p-4">
+                <div class="dashboard-card p-4">
+                    <h3 class="mb-4"><i class="bi bi-person-plus-fill"></i> Register New Patient</h3>
+                    <form id="add-patient-form">
+                        <!-- Full Name -->
+                        <div class="mb-3">
+                            <label for="fullName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="fullName" placeholder="Enter full name" required>
+                        </div>
+
+                        <div class="row">
+                            <!-- Date of Birth -->
+                            <div class="col-md-6 mb-3">
+                                <label for="dob" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="dob">
+                            </div>
+                            <!-- Gender -->
+                            <div class="col-md-6 mb-3">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select id="gender" class="form-select">
+                                    <option selected disabled value="">Choose...</option>
+                                    <option>Male</option>
+                                    <option>Female</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Contact Number -->
+                            <div class="col-md-6 mb-3">
+                                <label for="contactNumber" class="form-label">Contact Number</label>
+                                <input type="tel" class="form-control" id="contactNumber" placeholder="Enter 10-digit number" required>
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" rows="3" placeholder="Enter full address"></textarea>
+                        </div>
+
+                        <!-- Medical History -->
+                        <div class="mb-3">
+                            <label for="medicalHistory" class="form-label">Medical History (Optional)</label>
+                            <textarea class="form-control" id="medicalHistory" rows="3" placeholder="Enter relevant medical history, allergies, etc."></textarea>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Save Patient</button>
+                            <a href="patients.html" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Internal JavaScript for Add Patient Form -->
+    <script>
+        document.getElementById('add-patient-form').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const apiUrl = 'http://127.0.0.1:8000/patients';
+
+            // Collect data from the form
+            const patientData = {
+                fullName: document.getElementById('fullName').value,
+                contactNumber: document.getElementById('contactNumber').value,
+                dob: document.getElementById('dob').value ? new Date(document.getElementById('dob').value).toISOString() : null,
+                gender: document.getElementById('gender').value,
+                address: document.getElementById('address').value,
+                medicalHistory: document.getElementById('medicalHistory').value,
+                dateRegistered: new Date().toISOString() // Set current date and time
+            };
+
+            // Basic validation
+            if (!patientData.fullName || !patientData.contactNumber) {
+                alert('Please fill in the Full Name and Contact Number.');
+                return;
+            }
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(patientData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to save patient.');
+                }
+
+                // If successful, redirect back to the patient list
+                window.location.href = 'patients.html';
+
+            } catch (error) {
+                console.error('Save error:', error);
+                alert('Could not save the patient. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>
