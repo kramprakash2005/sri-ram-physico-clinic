@@ -1,123 +1,99 @@
-Sri Ram Physico Clinic - Management Software
-1. Overview
-This is a full-stack web application designed to streamline the daily operations of the Sri Ram Physico Clinic. The software provides a complete solution for patient registration, visit tracking, service management, billing, and reporting, all accessible through a clean, modern, and data-driven user interface.
+# 🏥 Sri Ram Physico Clinic - Management Software
 
-2. Application Workflow
-The application is designed to follow the natural workflow of a patient visiting the clinic:
+## 1. Overview
+This is a **full-stack web application** designed to streamline the daily operations of the **Sri Ram Physico Clinic**.  
+The software provides a complete solution for:
 
-Login: The user first logs in through a professional, secure login screen. The application is protected, and no page is accessible without a successful login.
+- 🧾 Patient registration  
+- 📅 Visit tracking  
+- 💊 Service management  
+- 💰 Billing and reporting  
 
-Dashboard: After logging in, the user lands on an action-oriented dashboard that serves as a launchpad for the day's most common tasks.
+All accessible through a **clean, modern, and data-driven user interface**.
 
-Patient Arrival:
+---
 
-New Patient: If a new patient arrives, the user clicks "Manage Patients" -> "Add New Patient" and registers them by filling out the add-patient.html form.
+## 2. Application Workflow
 
-Existing Patient: If an existing patient arrives, their visit is initiated from the dashboard by clicking "Create New Visit".
+The application follows the natural workflow of a patient visiting the clinic:
 
-Create a Visit: On the "Create Visit" page, the user searches for the patient by name or contact number. Once found, they click "+ Add Visit" to open a popup where they enter the problem or reason for the visit.
+### 🔐 Login
+- The user logs in through a professional, secure login screen.  
+- No page is accessible without successful authentication.
 
-Visit Tracking: The new visit automatically appears on the main visits.html page, which acts as a queue for all patients who have checked in for the day, displaying their arrival time.
+### 🏠 Dashboard
+- After logging in, the user lands on an **action-oriented dashboard** serving as a launchpad for the day’s common tasks.
 
-Billing Process:
+### 👩‍⚕️ Patient Arrival
+#### New Patient
+- Click **“Manage Patients” → “Add New Patient”**  
+- Register the patient using the `add-patient.html` form.
 
-When a visit is created, a corresponding empty, unpaid bill is automatically generated in the backend.
+#### Existing Patient
+- For returning patients, create a visit from the dashboard by clicking **“Create New Visit”**.
 
-The user navigates to the "Billing" page, which defaults to showing a list of all pending bills.
+### 📋 Create a Visit
+- On the **Create Visit** page:
+  - Search the patient by name or contact number.
+  - Click **“+ Add Visit”** to open a popup and enter the problem or reason for the visit.
 
-The user finds the patient's bill and clicks "
+- The visit then appears on the **visits.html** page — acting as a queue for all patients checked in for the day, showing their arrival time.
 
-OpenBill
-".
+### 💳 Billing Process
+1. When a visit is created, a corresponding **empty, unpaid bill** is auto-generated.
+2. Navigate to the **Billing** page to view all pending bills.
+3. Click **[Open Bill]** for the specific patient.
+4. On the **manage-bill.html** page:
+   - Add treatments received
+   - Add medical remarks
+   - Select payment method
+   - Click **[Mark as Paid & Save]**
+5. The bill is now marked **Paid** and appears under:
+   - **Today’s Payments**
+   - **Final Reports**
 
-Manage Bill: On the manage-bill.html page, the user adds the specific treatments the patient received, adds any medical remarks, selects the payment method, and clicks "
+---
 
-Mark as Paid & Save
-".
+## 3. Features
 
-Completion: The bill is now marked as "Paid" and will appear in the "Today's Payments" tab on the billing page and in the final reports.
+✅ **Secure Authentication** – Professional login system to protect data.  
+✅ **Action-Oriented Dashboard** – Quick access to common daily tasks.  
+✅ **Patient Management** – Full CRUD functionality with detailed profiles and billing history.  
+✅ **Service Management** – Manage all clinic services and treatments (CRUD).  
+✅ **Visit Management** – Track and manage all patient visits for the day.  
+✅ **Billing Management** – Add treatments, track payments, and manage pending bills.  
+✅ **Reporting** – Filterable date-range reports for payments, services, and new patients.  
+✅ **Professional UI** – Built with **Bootstrap 5**, includes confirmation dialogs & notifications.
 
-3. Features
-Secure Authentication: A professional login system to protect application data.
+---
 
-Action-Oriented Dashboard: A clean "launchpad" to access the most common daily tasks.
+## 4. Technology Stack
 
-Patient Management: Full CRUD (Create, Read, Update, Delete) functionality for patient records, including a detailed patient profile view with complete visit and billing history.
+| Component | Technology |
+|------------|-------------|
+| **Backend** | Python (FastAPI) |
+| **Database** | MongoDB (NoSQL) |
+| **Frontend** | HTML, CSS, JavaScript |
+| **UI Framework** | Bootstrap 5 |
 
-Service Management: Full CRUD functionality for managing the clinic's services and treatments.
+---
 
-Visit Management: A complete workflow for creating and viewing patient visits for the current day.
+## 5. Database Design
 
-Billing Management: A comprehensive billing system to manage pending bills, add treatments, and track payments.
+The application uses **MongoDB** with separate collections, mirroring a relational design for clarity and reporting efficiency.
 
-Reporting: A powerful reporting tool with a date range filter to generate detailed reports on payments, services, and new patients.
+### 🗂 Collections
 
-Professional UI: A consistent, clean, and modern user interface built with Bootstrap, featuring confirmation dialogs and a professional notification system.
+| Collection | Description |
+|-------------|--------------|
+| **counters** | Tracks next readable ID for patients, visits, and bills |
+| **patients** | Stores patient info with a unique `patient_id` |
+| **visits** | Stores visit details linked to a patient |
+| **bills** | Stores billing info linked to visits, with treatment snapshots |
+| **treatments** | Catalog of all clinic services |
 
-4. Technology Stack
-Backend: Python with the FastAPI framework.
-
-Database: MongoDB (NoSQL).
-
-Frontend: HTML, CSS, and modern JavaScript.
-
-UI Framework: Bootstrap 5.
-
-5. Database Design
-The application uses MongoDB with a separate collections model, which is a direct adaptation of the original relational design. This provides a clean structure that is excellent for generating lists and reports.
-
-Original Relational Design
-Final MongoDB Schemas
-counters: Tracks the next readable ID for patients, visits, and bills.
-
-patients: Stores core patient information with a unique, readable patient_id.
-
-visits: Stores visit details, linking to a patient via their ObjectId.
-
-bills: Stores billing information, linking to a visit and containing snapshots of treatments.
-
-treatments: A catalog of all services offered by the clinic.
-
-6. Setup and Installation
-Follow these steps to set up and run the project on a local machine.
-
-Prerequisites
-Python (version 3.8 or newer).
-
-MongoDB installed and running on your local machine.
-
-A web browser.
-
-Step 1: Set Up the Project
-Place the entire project folder (sri-ram-clinic-backend) in a desired location.
-
-Open your terminal or command prompt and navigate into the project's root directory:
-
-cd path/to/sri-ram-clinic-backend
-
-
-Step 2: Create and Activate a Virtual Environment
-# Create the virtual environment
-python -m venv venv
-
-# Activate it
-# On Windows:
-venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
-
-
-Step 3: Install Dependencies
-Install all the required Python libraries using the requirements.txt file.
-
-pip install -r requirements.txt
-
-
-Step 4: Set Up the MongoDB Database
-Open the MongoDB shell (mongosh).
-
-Create the database and the collections:
-
+### 🧩 Initialization
+```js
 use sriRamPhysicoClinic
 db.createCollection("patients")
 db.createCollection("visits")
@@ -125,43 +101,111 @@ db.createCollection("bills")
 db.createCollection("treatments")
 db.createCollection("counters")
 
+db.counters.insertMany([
+  { "_id": "patients", "sequence_value": 0 },
+  { "_id": "visits", "sequence_value": 0 },
+  { "_id": "bills", "sequence_value": 0 }
+])
+```
 
-Initialize the counters for the readable IDs:
+---
+
+## 6. Setup and Installation
+
+### 🧱 Prerequisites
+- Python **3.8+**
+- MongoDB installed & running
+- Web browser
+
+### ⚙️ Step 1: Set Up the Project
+```bash
+cd path/to/sri-ram-clinic-backend
+```
+
+### 🐍 Step 2: Create and Activate Virtual Environment
+```bash
+# Create
+python -m venv venv
+
+# Activate
+# Windows
+venv\Scripts\activate
+# macOS/Linux
+source venv/bin/activate
+```
+
+### 📦 Step 3: Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 🗃 Step 4: Set Up MongoDB
+Run Mongo shell:
+```bash
+mongosh
+```
+
+Then execute:
+```js
+use sriRamPhysicoClinic
+db.createCollection("patients")
+db.createCollection("visits")
+db.createCollection("bills")
+db.createCollection("treatments")
+db.createCollection("counters")
 
 db.counters.insertMany([
   { "_id": "patients", "sequence_value": 0 },
   { "_id": "visits", "sequence_value": 0 },
   { "_id": "bills", "sequence_value": 0 }
 ])
+```
 
+Exit the shell after completion.
 
-Exit the MongoDB shell.
+---
 
-7. How to Run the Application
-The application consists of two parts: the backend server and the frontend files.
+## 7. Running the Application
 
-Step 1: Run the Backend Server
-In your terminal (make sure you are in the project's root directory, sri-ram-clinic-backend, and the virtual environment is active), run the following command:
+The system has two parts:
+- 🖥 Backend (FastAPI)
+- 🌐 Frontend (HTML files)
 
+### ▶️ Step 1: Start the Backend
+```bash
 uvicorn app.main:app --reload
+```
 
+Server will run at:  
+👉 **http://127.0.0.1:8000**
 
-The server is now running at http://127.0.0.1:8000. Keep this terminal window open.
+### 🌍 Step 2: Open Frontend
+1. Go to your project folder.  
+2. Open **login.html** in your browser.
 
-Step 2: Open the Frontend Application
-Navigate to the project folder in your file explorer.
+---
 
-Open the login.html file in your web browser.
+### 🔑 Default Login Credentials
+| Field | Value |
+|--------|--------|
+| **Username** | `admin` |
+| **Password** | `password` |
 
-The application is now ready to use.
+*(You can change these in `login.html`)*
 
-Default Login Credentials
-Username: admin
+---
 
-Password: password
-(You can change these in the login.html file)
+## 8. API Documentation
 
-8. API Documentation
-The FastAPI backend automatically generates interactive API documentation. You can access it at the following URL while the server is running:
+The FastAPI backend automatically generates interactive API docs.
 
-https://www.google.com/search?q=http://127.0.0.1:8000/docs
+Access it at:  
+👉 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+---
+
+### 🧠 Author
+**Sri Ram Physico Clinic Management Software**  
+Developed for streamlining clinical operations using FastAPI + MongoDB + Bootstrap.
+
+---
