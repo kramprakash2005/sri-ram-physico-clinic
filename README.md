@@ -51,14 +51,20 @@ The application follows the natural workflow of a patient visiting the clinic:
 5. The bill is now marked **Paid** and appears under:
    - **Today’s Payments**
    - **Final Reports**
-
-### UI DEMO 
-(https://kramprakash2005.github.io/clinic.github.io/login.html)[click here]
-Sample UserName: admin
-Sample Password: password
+   
 ---
 
-## 3. Features
+## 3. UI Demo
+
+[👉 Click here to view the demo](https://kramprakash2005.github.io/clinic.github.io/login.html)
+
+**Sample Credentials:**
+- **Username:** `admin`
+- **Password:** `password`
+
+---
+
+## 4. Features
 
 ✅ **Secure Authentication** – Professional login system to protect data.  
 ✅ **Action-Oriented Dashboard** – Quick access to common daily tasks.  
@@ -71,7 +77,7 @@ Sample Password: password
 
 ---
 
-## 4. Technology Stack
+## 5. Technology Stack
 
 | Component | Technology |
 |------------|-------------|
@@ -82,7 +88,7 @@ Sample Password: password
 
 ---
 
-## 5. Database Design
+## 6. Database Design
 
 The application uses **MongoDB** with separate collections, mirroring a relational design for clarity and reporting efficiency.
 
@@ -114,7 +120,7 @@ db.counters.insertMany([
 
 ---
 
-## 6. Setup and Installation
+## 7. Setup and Installation
 
 ### 🧱 Prerequisites
 - Python **3.8+**
@@ -169,7 +175,7 @@ Exit the shell after completion.
 
 ---
 
-## 7. Running the Application
+## 8. Running the Application
 
 The system has two parts:
 - 🖥 Backend (FastAPI)
@@ -199,17 +205,11 @@ Server will run at:
 
 ---
 
-## 8. API Documentation
+## 9. API Documentation
 
 The FastAPI backend automatically generates interactive API docs.
 
 Access it at:  
 👉 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-
----
-
-### 🧠 Author
-**Sri Ram Physico Clinic Management Software**  
-Developed for streamlining clinical operations using FastAPI + MongoDB + Bootstrap.
 
 ---
