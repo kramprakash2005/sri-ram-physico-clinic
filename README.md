@@ -62,6 +62,7 @@ The application follows the natural workflow of a patient visiting the clinic:
 - **Username:** `admin`
 - **Password:** `password`
 
+[👉 Click here to view complete video demo](https://www.linkedin.com/posts/ram-prakash-k-ba6881320_fullstackdevelopment-fullstackdeveloper-webdevelopment-activity-7384114148181196801-JL6p?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFFJdW4BIFlOn2QylPth0GwxYDqomDt7Ung)
 ---
 
 ## 4. Features
