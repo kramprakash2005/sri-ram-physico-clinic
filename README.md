@@ -119,7 +119,7 @@ db.counters.insertMany([
 
 ### ⚙️ Step 1: Set Up the Project
 ```bash
-cd path/to/sri-ram-clinic-backend
+cd path/to/sri-ram-physico-clinic
 ```
 
 ### 🐍 Step 2: Create and Activate Virtual Environment
